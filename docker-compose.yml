@@ -4,29 +4,28 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MOCK_MODE=true
-      - CORS_ORIGINS=["http://localhost:5173"]
+      MOCK_MODE: "true"
+      CORS_ORIGINS: '["http://localhost:5173"]'
     volumes:
-      - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    working_dir: /app
+      - ./backend/app:/app/app
+      - ./backend/tests:/app/tests
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 5s
       timeout: 3s
       retries: 5
-      start_period: 10s
+      start_period: 15s
 
   frontend:
     build: ./frontend
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://backend:8000
+      VITE_API_URL: "http://backend:8000"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev -- --host
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
     depends_on:
       backend:
         condition: service_healthy
