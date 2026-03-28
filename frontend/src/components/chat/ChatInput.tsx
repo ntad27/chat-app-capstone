@@ -18,9 +18,9 @@ export function ChatInput() {
     setInput('')
     setLoading(true)
 
-    useChatStore.getState().addUserMessage(query)
-    useChatStore.getState().reset
+    useChatStore.getState().reset()
     useTraceStore.getState().reset()
+    useChatStore.getState().addUserMessage(query)
 
     try {
       const sessionId = await createSession(query)
