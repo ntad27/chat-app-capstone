@@ -7,8 +7,7 @@ import type { NormalizedEvent } from '../types/events'
 
 export function useEventStream() {
   const sessionId = useSessionStore((s) => s.sessionId)
-  const mockMode = useSessionStore((s) => s.mockMode)
-  const url = sessionId ? getStreamUrl(sessionId, mockMode) : null
+  const url = sessionId ? getStreamUrl(sessionId) : null
 
   const handleMessage = useCallback((data: unknown) => {
     decodeEvent(data as NormalizedEvent)

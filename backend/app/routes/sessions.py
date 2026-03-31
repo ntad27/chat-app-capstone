@@ -1,8 +1,10 @@
+import asyncio
 import uuid
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.config import settings
 from app.services.session import session_store
 
 router = APIRouter()
@@ -23,7 +25,17 @@ class AnswerRequest(BaseModel):
 @router.post("/api/sessions", response_model=CreateSessionResponse)
 async def create_session(req: CreateSessionRequest):
     session_id = str(uuid.uuid4())
-    session_store.create(session_id, req.query)
+    session = session_store.create(session_id, req.query)
+
+    if not settings.mock_mode:
+        # Start real agent orchestration in background
+        from app.agents.orchestrator import run_research_session
+
+        async def push_event(event):
+            await session.event_queue.put(event)
+
+        asyncio.create_task(run_research_session(session, push_event))
+
     return CreateSessionResponse(session_id=session_id)
 
 

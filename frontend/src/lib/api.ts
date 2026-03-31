@@ -20,7 +20,7 @@ export async function sendAnswer(sessionId: string, answer: string): Promise<voi
   if (!res.ok) throw new Error(`Failed to send answer: ${res.status}`)
 }
 
-export function getStreamUrl(sessionId: string, mock = true): string {
-  const params = mock ? '?mock=true' : ''
-  return `${BASE_URL}/stream/${sessionId}${params}`
+export function getStreamUrl(sessionId: string): string {
+  // Backend decides mock vs live based on MOCK_MODE env var
+  return `${BASE_URL}/stream/${sessionId}`
 }

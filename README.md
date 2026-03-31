@@ -30,8 +30,20 @@ Open http://localhost:5173 — the frontend proxies API requests to the backend.
 ### Mock Mode (Default)
 No API key needed. The app uses a pre-scripted mock event stream that simulates a full research pipeline: lead-analyst -> 3 parallel web-researchers -> data-analyst -> report-writer.
 
-### Live Mode
-Set `MOCK_MODE=false` and provide `ANTHROPIC_API_KEY` in `.env`.
+### Live Mode (Real Claude API)
+Set these in `backend/.env`:
+```
+MOCK_MODE=false
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+MODEL_NAME=claude-sonnet-4-20250514
+```
+
+In live mode, the backend runs real multi-agent orchestration using the Anthropic Python SDK:
+- **lead-analyst** uses tool calls (`ask_user`, `dispatch_researchers`) to decompose the query
+- **web-researcher** agents run in parallel via `asyncio.gather()`, each making a streaming Claude API call
+- **data-analyst** and **report-writer** run sequentially after researchers complete
+- All API calls use `client.messages.stream()` for real-time event emission
+- The `ask_user` tool pauses the agent loop, waits for user input via `asyncio.Future`, then resumes
 
 ## Architecture
 

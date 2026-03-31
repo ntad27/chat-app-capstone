@@ -6,7 +6,6 @@ interface SessionState {
   sessionId: string | null
   status: SessionStatus
   connected: boolean
-  mockMode: boolean
   setSessionId: (id: string) => void
   setStatus: (status: SessionStatus) => void
   setConnected: (connected: boolean) => void
@@ -17,7 +16,6 @@ export const useSessionStore = create<SessionState>((set) => ({
   sessionId: null,
   status: 'idle',
   connected: false,
-  mockMode: true,
   setSessionId: (id) => set({ sessionId: id }),
   setStatus: (status) => set({ status }),
   setConnected: (connected) => set({ connected }),
